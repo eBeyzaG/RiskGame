@@ -5,6 +5,8 @@
  */
 package riskserver;
 
+import java.util.Random;
+
 /**
  *
  * @author beyza
@@ -33,13 +35,21 @@ public class Game {
         
         player1.setGame(this);
         player2.setGame(this);
-
+        
+        Random r = new Random();
+         newMsg = new SendMessage("first_part");
+         newMsg.setMessage("first_turn");
+        if(r.nextInt(2) == 1){
+            player2.sendMessage(newMsg.toString());
+        }else{
+            player1.sendMessage(newMsg.toString());
+        }
+            
     }
     
-    void forwardMessage(){
-        
-        
-        
+    
+    void forwardMessage(Object msg, ServerClient pair){
+        pair.sendMessage(msg.toString()); 
     }
 
 }

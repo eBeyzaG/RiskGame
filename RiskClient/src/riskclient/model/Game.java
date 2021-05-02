@@ -10,5 +10,6 @@ package riskclient.model;
  * @author beyza
  */
 public class Game {
+
     
 }

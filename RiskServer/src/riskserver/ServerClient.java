@@ -48,8 +48,6 @@ public class ServerClient {
         this.game = game;
     }
 
-  
-    
     void listen() {
         this.isConnected = true;
         this.server_listening_client.start();
@@ -92,8 +90,6 @@ public class ServerClient {
     public void setWanted_pair_id(int wanted_pair_id) {
         this.wanted_pair_id = wanted_pair_id;
     }
-    
-    
 
 }
 
@@ -105,11 +101,10 @@ class ServerListeningClient extends Thread {
         this.server_client = server_client;
     }
 
-    void assign_wanted_pair(int id){
+    void assign_wanted_pair(int id) {
         this.server_client.setWanted_pair_id(id);
     }
-    
-    
+
     @Override
     public void run() {
         while (this.server_client.isConnected) {
@@ -118,22 +113,32 @@ class ServerListeningClient extends Thread {
             Object receivedText;
             try {
                 receivedText = this.server_client.client_input.readObject();
-                ReceiveMessage msg = new ReceiveMessage(receivedText.toString(),this.server_client.clientId);
-               
-                
-                switch (msg.type){
-                    
+                ReceiveMessage msg = new ReceiveMessage(receivedText.toString(), this.server_client.clientId);
+
+                switch (msg.type) {
+
                     case "pair":
                         System.out.println(msg.toString());
                         assign_wanted_pair(msg.wanted_pair_id);
                         break;
+                    case "first_part":
+                        this.server_client.game.forwardMessage(receivedText, server_client.pair);
+                        break;
+                    case "locate_troops":
+                        this.server_client.game.forwardMessage(receivedText, server_client.pair);
+                        break;
+                    case "boardInfo":
+                        this.server_client.game.forwardMessage(receivedText, server_client.pair);
+                        break;
                     default:
-                        System.out.println(msg.toString());
+                        System.out.println("Server: " + msg.toString());
+                         this.server_client.game.forwardMessage(receivedText, server_client.pair);
+ 
                         System.out.println("Message type not supported.");
                         break;
-                
+
                 }
-                
+
             } catch (IOException ex) {
                 this.server_client.server.removeClient(server_client);
                 Logger.getLogger(ServerListeningClient.class.getName()).log(Level.SEVERE, null, ex);

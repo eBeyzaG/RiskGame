@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author beyza
  */
-public class SendMessage{
+public class SendMessage implements Serializable{
     
     String type;
     String message;
@@ -58,7 +58,8 @@ public class SendMessage{
          msg += "Type: " + this.type + "\nMessage: " + this.message +
                   "\nTo: " + this.toId + "\nFrom: " + this.fromId +
                      "\nWanted_pair_id: " + this.wanted_pair_id +
-                        "\nClient_id_for_connection: " + this.client_id_for_connection;
+                        "\nClient_id_for_connection: " + this.client_id_for_connection +
+                        "\nno info\nno info ";
      
         return msg;
     }

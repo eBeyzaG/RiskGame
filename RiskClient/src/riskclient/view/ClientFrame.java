@@ -7,6 +7,11 @@ package riskclient.view;
 
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JButton;
 
 /**
  *
@@ -19,15 +24,29 @@ public class ClientFrame extends javax.swing.JFrame {
      */
     public ClientFrame() {
         initComponents();
-        CardLayout cardLayout = new CardLayout();
+        /*    CardLayout cardLayout = new CardLayout();
         this.getContentPane().setLayout(cardLayout);
         
         
         
         this.setLocationRelativeTo(null); //center the window
-        this.getContentPane().setBackground(Color.yellow);
+        this.getContentPane().setBackground(Color.yellow);*/
+        JButton pass_button = new JButton();
+        pass_button.setText("anlaar hesaab");
+        pass_button.setLocation(new Point(0,0));
+        pass_button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                System.out.println("Pass");
+            }
+        });
+       
+        pass_button.setSize(new Dimension(100, 100));
+       
+        this.getContentPane().add(pass_button);
+       
+    }
 
-        }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

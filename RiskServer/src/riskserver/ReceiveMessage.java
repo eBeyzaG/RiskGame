@@ -12,7 +12,7 @@ import java.util.ArrayList;
  *
  * @author beyza
  */
-public class ReceiveMessage {
+public class ReceiveMessage implements Serializable{
 
     String type;
     String message;
@@ -20,6 +20,7 @@ public class ReceiveMessage {
     int fromId;
     int wanted_pair_id;
     int client_id_for_connection;
+    
 
     public ReceiveMessage(String text, int from) {
         String[] lines = text.split("\n");

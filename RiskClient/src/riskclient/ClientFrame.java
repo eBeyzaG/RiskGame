@@ -5,6 +5,31 @@
  */
 package riskclient;
 
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.List;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.DefaultListModel;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import riskclient.model.Region;
+import riskclient.view.GamePanel;
+import riskclient.view.MenuPanel;
+
 /**
  *
  * @author beyza
@@ -15,10 +40,56 @@ public class ClientFrame extends javax.swing.JFrame {
      * Creates new form ClientFrame
      */
     Client cli;
+    CardLayout cardLayout;
+    DefaultListModel region_dlm;
+    int turn_count = 0;
+    
+    static ArrayList<BufferedImage> region_images;
 
-    public ClientFrame() {
+    Region attacked_region;
+    Region attacking_region;
+    int attacked_troop_count = 0;
+    int defending_troop_count;
+    BufferedImage bi;
+
+    public ClientFrame(Client c) {
+       
+        cli = c;
+        region_images = c.board.getRegion_images();
         initComponents();
-        cli = new Client("127.0.0.1", 5000);
+
+        while (cli.clientId == -1);
+        your_id.setText("Your ID: " + cli.clientId + "");
+        region_dlm = new DefaultListModel();
+        load_region_list();
+        setMessageBox("Pair to start playing.");
+        this.chooseButton.setEnabled(false);
+        //remove(jButton2);
+        pass_button.setVisible(false);
+        setCheckBoxesVisible(false);
+
+    }
+
+    public void setMessageBox(String s) {
+        messageBox.setText(s);
+    }
+
+    public synchronized void load_region_list() {
+
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+
+                region_dlm.removeAllElements();
+
+                for (Region r : cli.board.getRegions()) {
+                    region_dlm.addElement("Region " + r.getName() + "     " + r.getOwner() + "     " + r.getTroop_count());
+                }
+                regionList.setModel(region_dlm);
+                jPanel2.repaint();
+                return;
+            }
+        });
+
     }
 
     /**
@@ -30,48 +101,259 @@ public class ClientFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        count_boxes = new javax.swing.ButtonGroup();
         jButton1 = new javax.swing.JButton();
         jTextField1 = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        regionList = new javax.swing.JList<>();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        chooseButton = new javax.swing.JButton();
+        messageBox = new javax.swing.JLabel();
+        your_id = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        troop_count_label = new javax.swing.JLabel();
+        pass_button = new javax.swing.JButton();
+        jCheckBox1 = new javax.swing.JCheckBox();
+        jCheckBox2 = new javax.swing.JCheckBox();
+        jCheckBox3 = new javax.swing.JCheckBox();
+        jLabel4 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel(){
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+            @Override
+            public void paintComponent(Graphics g)
 
-        jButton1.setText("jButton1");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
+            {
+                super.paintComponent(g);
+                try {
+                    bi = ImageIO.read(new File("C:\\Users\\beyza\\OneDrive\\Belgeler\\GitKlones\\RiskGame\\RiskClient\\src\\riskclient\\images\\map.png"));
+                } catch (IOException ex) {
+                    Logger.getLogger(ClientFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                g.drawImage(bi, 0, 0, this);
+                for(BufferedImage bim: ClientFrame.region_images){
+                    g.drawImage(bim, 0, 0, this);
+                }
 
-        jTextField1.setText("jTextField1");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
+            }};
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(65, 65, 65)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(90, 90, 90))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(105, 105, 105)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(163, Short.MAX_VALUE))
-        );
+            setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+            setTitle("Risk Game");
 
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
+            jButton1.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+            jButton1.setText("Pair");
+            jButton1.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jButton1ActionPerformed(evt);
+                }
+            });
+
+            jTextField1.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
+            jTextField1.setText("Pair ID");
+            jTextField1.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    jTextField1MouseClicked(evt);
+                }
+            });
+            jTextField1.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jTextField1ActionPerformed(evt);
+                }
+            });
+
+            regionList.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+            regionList.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseReleased(java.awt.event.MouseEvent evt) {
+                    regionListMouseReleased(evt);
+                }
+            });
+            jScrollPane1.setViewportView(regionList);
+
+            jLabel1.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+            jLabel1.setText("Region");
+
+            jLabel2.setFont(new java.awt.Font("Consolas", 1, 48)); // NOI18N
+            jLabel2.setText("RISK");
+
+            chooseButton.setText("CHOOSE");
+            chooseButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    chooseButtonActionPerformed(evt);
+                }
+            });
+
+            messageBox.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+
+            your_id.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+            your_id.setText("jLabel3");
+
+            jLabel3.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+            jLabel3.setText("Troop Count");
+
+            troop_count_label.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+
+            pass_button.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+            pass_button.setText("PASS");
+            pass_button.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    pass_buttonActionPerformed(evt);
+                }
+            });
+
+            count_boxes.add(jCheckBox1);
+            jCheckBox1.setText("1");
+            jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jCheckBox1ActionPerformed(evt);
+                }
+            });
+
+            count_boxes.add(jCheckBox2);
+            jCheckBox2.setText("2");
+            jCheckBox2.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jCheckBox2ActionPerformed(evt);
+                }
+            });
+
+            count_boxes.add(jCheckBox3);
+            jCheckBox3.setText("3");
+            jCheckBox3.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jCheckBox3ActionPerformed(evt);
+                }
+            });
+
+            jLabel4.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+            jLabel4.setText("Owner");
+
+            javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+            jPanel1.setLayout(jPanel1Layout);
+            jPanel1Layout.setHorizontalGroup(
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(0, 56, Short.MAX_VALUE)
+            );
+            jPanel1Layout.setVerticalGroup(
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(0, 56, Short.MAX_VALUE)
+            );
+
+            jPanel2.setPreferredSize(new java.awt.Dimension(450, 450));
+
+            javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+            jPanel2.setLayout(jPanel2Layout);
+            jPanel2Layout.setHorizontalGroup(
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(0, 450, Short.MAX_VALUE)
+            );
+            jPanel2Layout.setVerticalGroup(
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(0, 450, Short.MAX_VALUE)
+            );
+
+            javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+            getContentPane().setLayout(layout);
+            layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(482, 482, 482)
+                            .addComponent(jLabel2))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(47, 47, 47)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(messageBox, javax.swing.GroupLayout.PREFERRED_SIZE, 1012, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel1)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(72, 72, 72)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(chooseButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(pass_button, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGap(18, 18, 18)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jCheckBox1)
+                                        .addComponent(jCheckBox2)
+                                        .addComponent(jCheckBox3))))))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addComponent(your_id, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jButton1)
+                            .addGap(818, 818, 818))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(troop_count_label, javax.swing.GroupLayout.PREFERRED_SIZE, 388, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(0, 0, Short.MAX_VALUE)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(jLabel4)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(jLabel3)
+                                            .addGap(6, 6, 6)))
+                                    .addGap(129, 129, 129)))
+                            .addGap(14, 14, 14)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(152, 152, 152))))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(179, 179, 179))
+            );
+            layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(17, 17, 17)
+                    .addComponent(jLabel2)
+                    .addGap(7, 7, 7)
+                    .addComponent(messageBox, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(388, 388, 388)
+                            .addComponent(jCheckBox1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jCheckBox2)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jCheckBox3))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(18, 18, 18)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel3)
+                                        .addComponent(jLabel4))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(chooseButton)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(pass_button)))))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(troop_count_label, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(88, 88, 88)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(your_id, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton1))
+                    .addGap(32, 32, 32))
+            );
+
+            pack();
+        }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
@@ -82,8 +364,8 @@ public class ClientFrame extends javax.swing.JFrame {
             msg.setToId(Integer.parseInt(jTextField1.getText()));
             msg.setWanted_pair_id(Integer.parseInt(jTextField1.getText()));
             this.cli.sendMessage(msg);
-        }else{
-            System.out.println("kendi id'sini giremez ya da boş bırakamaz");
+        } else {
+            setMessageBox("You cannot leave pair ID empty and you cannot enter your own ID.");
         }
 
 
@@ -91,7 +373,330 @@ public class ClientFrame extends javax.swing.JFrame {
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
+
     }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void chooseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chooseButtonActionPerformed
+        // TODO add your handling code here:
+
+        if (Client.game_part.equals("choose_regions")) {
+            String regionLetter = this.regionList.getSelectedValue().toString().charAt(7) + "";
+
+            for (Region r : this.cli.board.getRegions()) {
+                if ((regionLetter.equals(r.getName())) && (!r.getOwner().equals("empty"))) {
+                    setMessageBox("This region is already chosen.");
+                    return;
+                }
+            }
+
+            cli.board.updateBoard(regionLetter, 1, "player");
+            this.load_region_list();
+            SendMessage newMsg = new SendMessage("first_part");
+            newMsg.setChosen_region_name(regionLetter);
+            cli.sendMessage(newMsg.toString());
+            this.messageBox.setText("Wait for other player's turn.");
+            this.chooseButton.setEnabled(false);
+            Client.turn_count++;
+
+        } else if (Client.game_part.equals("locate_troops")) {
+            //start_attack_part();
+            this.messageBox.setText("Wait for other player's turn.");
+            SendMessage newMsg = new SendMessage("locate_troops");
+            newMsg.setBoard_info(this.cli.board.send_board_info(this.cli.clientId, "null", 0, "null"));
+            this.cli.sendMessage(newMsg.toString());
+            System.out.println("yollandı: " + newMsg.toString());
+
+        } else if (Client.game_part.equals("attack_part")) {
+            if (attacking_region.getTroop_count() < attacked_troop_count) {
+                setMessageBox("You do not have enough troops in Region " + attacking_region.getName());
+
+            } else {
+                //     attacking_region.setTroop_count(attacking_region.getTroop_count() - attacked_troop_count);
+                chooseButton.setEnabled(true);
+                pass_button.setEnabled(false);
+                String board_info = this.cli.board.send_board_info(this.cli.clientId, attacked_region.getName(), attacked_troop_count, attacking_region.getName());
+                SendMessage newMsg = new SendMessage("attack");
+                newMsg.setBoard_info(board_info);
+                System.out.println("saldırıldı: " + newMsg.toString());
+                this.cli.sendMessage(newMsg.toString());
+                this.messageBox.setText("Wait for other player's defense.");
+
+            }
+
+        } else if (Client.game_part.equals("defending")) {
+
+            if (attacking_region.getTroop_count() < attacked_troop_count) {
+                setMessageBox("You do not have enough troops in Region " + attacking_region.getName());
+            } else {
+                chooseButton.setEnabled(true);
+                setCheckBoxesVisible(false);
+                String result = this.cli.board.fight(attacking_region, attacked_troop_count, attacked_region, defending_troop_count);
+                load_region_list();
+                setMessageBox(result);
+                String board_info = this.cli.board.send_board_info(this.cli.clientId, "null", 0, "null");
+                SendMessage newMsg = new SendMessage("defend");
+                newMsg.setMessage(result);
+                newMsg.setBoard_info(board_info);
+                this.cli.sendMessage(newMsg.toString());
+            }
+
+        } else if (Client.game_part.equals("relocate_troops")) {
+            if (this.cli.board.check_finish().equals("player")) {
+                setMessageBox("YOU WON!");
+                SendMessage newMsg = new SendMessage("game_over");
+                newMsg.setMessage("LOSE...");
+                this.cli.sendMessage(newMsg.toString());
+            } else if (this.cli.board.check_finish().equals("rival")) {
+                setMessageBox("YOU LOSE...");
+                SendMessage newMsg = new SendMessage("game_over");
+                newMsg.setMessage("WIN!");
+                this.cli.sendMessage(newMsg.toString());
+            } else {
+                String board_info = this.cli.board.send_board_info(this.cli.clientId, "null", 0, "null");
+                SendMessage newMsg = new SendMessage("start_turn");
+                newMsg.setMessage("start_turn");
+                newMsg.setBoard_info(board_info);
+                this.cli.sendMessage(newMsg.toString());
+            }
+        } else if (Client.game_part.equals("second_locate_troops")) {
+            setMessageBox("Choose the region to attack.");
+            start_attack_part();
+            return;
+        }
+
+        chooseButton.setEnabled(false);
+
+    }//GEN-LAST:event_chooseButtonActionPerformed
+
+    private void regionListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_regionListMouseReleased
+        // TODO add your handling code here:
+        try {
+            String regionLetter = this.regionList.getSelectedValue().toString().charAt(7) + "";
+            System.out.println(regionLetter);
+            if (Client.game_part.equals("locate_troops") || Client.game_part.equals("relocate_troops") || Client.game_part.equals("second_locate_troops")) {
+
+                for (Region r : this.cli.board.getRegions()) {
+                    if (r.getName().equals(regionLetter) && r.getOwner().equals("player")) {
+
+                        JPopupMenu troop_menu = new JPopupMenu();
+
+                        if (r.getTroop_count() != 1) {
+                            JMenuItem jmi2 = new JMenuItem("-1");
+                            jmi2.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent ae) {
+
+                                    cli.board.updateBoard(r.getName(), r.getTroop_count() - 1, "player");
+                                    cli.total_troop_count += 1;
+                                    load_region_list();
+                                    setTroop_count_label(cli.total_troop_count + "");
+                                }
+                            });
+                            troop_menu.add(jmi2);
+                        }
+
+                        for (int i = 1; i <= cli.total_troop_count; i++) {
+                            JMenuItem jmi = new JMenuItem(i + "");
+                            jmi.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent ae) {
+                                    cli.board.updateBoard(r.getName(), r.getTroop_count() + Integer.parseInt(jmi.getText()), "player");
+                                    cli.total_troop_count -= Integer.parseInt(jmi.getText());
+                                    load_region_list();
+                                    setTroop_count_label(cli.total_troop_count + "");
+                                }
+                            });
+                            troop_menu.add(jmi);
+                        }
+
+                        if (evt.getButton() == 1) {
+                            troop_menu.show(evt.getComponent(), evt.getX(), evt.getY());
+                        }
+
+                        break;
+
+                    }
+                }
+
+            } else if (Client.game_part.equals("attack_part")) {
+                JPopupMenu neighbor_region_menu = new JPopupMenu();
+
+                for (Region r : this.cli.board.getRegions()) {
+                    if (r.getName().equals(regionLetter) && r.getOwner().equals("player")) {
+                        for (Region r2 : r.getNeighbor_regions()) {
+                            if (r2.getOwner().equals("rival")) {
+                                JMenuItem jmi = new JMenuItem(r2.getName());
+                                jmi.addActionListener(new ActionListener() {
+                                    @Override
+                                    public void actionPerformed(ActionEvent ae) {
+                                        System.out.println("Saldırılacak neighbor seçildi " + r2.getName() + " " + r2.getOwner());
+                                        setMessageBox("You are choosing to attack Region " + r2.getName() + " from Region " + r.getName() + ". Choose troop count and attack.");
+                                        setCheckBoxesVisible(true);
+
+                                        attacked_region = r2;
+                                        attacking_region = r;
+                                    }
+                                });
+                                neighbor_region_menu.add(jmi);
+                            }
+                        }
+                        if (evt.getButton() == 1) {
+                            neighbor_region_menu.show(evt.getComponent(), evt.getX(), evt.getY());
+                        }
+                        break;
+                    }
+
+                }
+
+            }
+        } catch (Exception e) {
+            load_region_list();
+        }
+
+    }//GEN-LAST:event_regionListMouseReleased
+
+    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+        // TODO add your handling code here:
+
+        if (Client.game_part.equals("defending")) {
+            defending_troop_count = 1;
+        } else {
+            attacked_troop_count = 1;
+        }
+    }//GEN-LAST:event_jCheckBox1ActionPerformed
+
+    private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
+        // TODO add your handling code here:
+        if (Client.game_part.equals("defending")) {
+            defending_troop_count = 2;
+        } else {
+            attacked_troop_count = 2;
+        }
+    }//GEN-LAST:event_jCheckBox2ActionPerformed
+
+    private void jCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox3ActionPerformed
+        // TODO add your handling code here:
+        if (Client.game_part.equals("defending")) {
+            defending_troop_count = 3;
+        } else {
+            attacked_troop_count = 3;
+        }
+    }//GEN-LAST:event_jCheckBox3ActionPerformed
+
+    private void pass_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pass_buttonActionPerformed
+        // TODO add your handling code here:
+        setCheckBoxesVisible(false);
+        pass_button.setVisible(false);
+        start_final_part();
+
+    }//GEN-LAST:event_pass_buttonActionPerformed
+
+    private void jTextField1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseClicked
+        // TODO add your handling code here:
+        jTextField1.setText("");
+    }//GEN-LAST:event_jTextField1MouseClicked
+
+    public void setTroop_count_label(String troop_count_label) {
+        this.troop_count_label.setText("Current Troop Count: " + troop_count_label);
+    }
+
+    public void start_final_part() {
+        Client.game_part = "relocate_troops";
+        messageBox.setText("Relocate your troops by clicking on your regions from the list.");
+        chooseButton.setText("END TURN");
+        chooseButton.setEnabled(true);
+    }
+
+    public void start_second_part() {
+        setCheckBoxesVisible(false);
+        load_region_list();
+        Client.game_part = "locate_troops";
+        setTroop_count_label(cli.total_troop_count + "");
+        messageBox.setText("Locate your troops by clicking on your regions from the list.");
+        chooseButton.setText("NEXT");
+        chooseButton.setEnabled(true);
+    }
+
+    public void second_turn() {
+        chooseButton.setText("NEXT");
+        chooseButton.setEnabled(true);
+        setCheckBoxesVisible(false);
+        load_region_list();
+        Client.game_part = "second_locate_troops";
+        cli.total_troop_count += 10;
+        setTroop_count_label(cli.total_troop_count + "");
+        messageBox.setText("Locate your troops by clicking on your regions from the list.");
+        chooseButton.setText("NEXT");
+        chooseButton.setEnabled(true);
+
+    }
+
+    public void finish_game(String winner) {
+        setMessageBox("Winner is " + winner);
+        SendMessage newMsg = new SendMessage("game_over");
+        this.cli.sendMessage(newMsg.toString());
+
+    }
+
+    public void start_attack_part() {
+
+        Client.game_part = "attack_part";
+        load_region_list();
+
+        setMessageBox("Choose one of your regions' neighbours to attack");
+        chooseButton.setText("ATTACK");
+        chooseButton.setEnabled(true);
+        pass_button.setEnabled(true);
+        pass_button.setVisible(true);
+    }
+
+    public void defend(String info) {
+
+        chooseButton.setEnabled(true);
+
+        load_region_list();
+        String[] split_info = info.split(",");
+
+        if (!split_info[0].equals("null")) {
+            String attackedRegionName = split_info[0];
+            String attackingRegionName = split_info[2];
+            attacked_troop_count = Integer.parseInt(split_info[1]);
+
+            for (Region r : this.cli.board.getRegions()) {
+
+                if (attackedRegionName.equals(r.getName())) {
+                    attacked_region = r;
+                }
+                if (attackingRegionName.equals(r.getName())) {
+                    attacking_region = r;
+                }
+
+            }
+
+            setMessageBox("Region " + attackedRegionName + " is under attack from Region " + attackingRegionName + " with " + attacked_troop_count + " troops. Choose number of defending troops.");
+            chooseButton.setText("DEFEND");
+            Client.game_part = "defending";
+            setCheckBoxesVisible(true);
+        } else {
+            Client.game_part = "locate_troops";
+            System.out.println("Saldırılmadı");
+
+        }
+
+    }
+
+    void setCheckBoxesVisible(boolean b) {
+        jCheckBox1.setVisible(b);
+        jCheckBox2.setVisible(b);
+        if (!Client.game_part.equals("defending")) {
+            jCheckBox3.setVisible(b);
+        }
+    }
+    
+  void update_images(){
+        
+  }
+
 
     /**
      * @param args the command line arguments
@@ -121,15 +726,32 @@ public class ClientFrame extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
+ /*    java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ClientFrame().setVisible(true);
+                new ClientFrame(new Client("8765", 32)).setVisible(true);
             }
-        });
+        });*/
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JButton chooseButton;
+    private javax.swing.ButtonGroup count_boxes;
     private javax.swing.JButton jButton1;
+    private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JCheckBox jCheckBox2;
+    private javax.swing.JCheckBox jCheckBox3;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
+    public static javax.swing.JLabel messageBox;
+    private javax.swing.JButton pass_button;
+    private javax.swing.JList<String> regionList;
+    private javax.swing.JLabel troop_count_label;
+    private javax.swing.JLabel your_id;
     // End of variables declaration//GEN-END:variables
 }
