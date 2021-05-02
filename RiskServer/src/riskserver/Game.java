@@ -25,7 +25,7 @@ public class Game {
         start_game();
     }
 
-    void start_game() {
+    void start_game() {//starts the game and chooses the first player randomly
 
         SendMessage newMsg = new SendMessage("msg");
         newMsg.setMessage("Paired");
@@ -48,7 +48,7 @@ public class Game {
     }
     
     
-    void forwardMessage(Object msg, ServerClient pair){
+    void forwardMessage(Object msg, ServerClient pair){//forwards the message from client to client
         pair.sendMessage(msg.toString()); 
     }
 

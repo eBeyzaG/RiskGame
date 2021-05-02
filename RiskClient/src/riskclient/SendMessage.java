@@ -10,6 +10,7 @@ import java.io.Serializable;
 /**
  *
  * @author beyza
+ * Message class to provide messaging between server and client
  */
 public class SendMessage implements Serializable{
 
@@ -59,7 +60,7 @@ public class SendMessage implements Serializable{
     }
 
     @Override
-    public String toString() {
+    public String toString() { //converts message to string to send to server
         String msg = "";
         msg += "Type: " + this.type + "\nMessage: " + this.message
                 + "\nTo: " + this.toId + "\nFrom: " + this.fromId

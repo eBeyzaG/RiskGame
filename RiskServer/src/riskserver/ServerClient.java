@@ -107,7 +107,8 @@ class ServerListeningClient extends Thread {
 
     @Override
     public void run() {
-        while (this.server_client.isConnected) {
+        while (this.server_client.isConnected) {//listens messages from client 
+            //and determines what to do according to message type
             System.out.println("Waiting for a message from client");
 
             Object receivedText;

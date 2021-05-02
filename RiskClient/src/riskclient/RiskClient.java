@@ -5,23 +5,12 @@
  */
 package riskclient;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import riskclient.model.Board;
-import riskclient.model.Region;
-import riskclient.view.ClientMainFrame;
+
 
 /**
  *
  * @author beyza
+ * Launcher class
  */
 public class RiskClient {
 

@@ -27,8 +27,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import riskclient.model.Region;
-import riskclient.view.GamePanel;
-import riskclient.view.MenuPanel;
 
 /**
  *
@@ -43,7 +41,7 @@ public class ClientFrame extends javax.swing.JFrame {
     CardLayout cardLayout;
     DefaultListModel region_dlm;
     int turn_count = 0;
-    
+
     static ArrayList<BufferedImage> region_images;
 
     Region attacked_region;
@@ -53,10 +51,24 @@ public class ClientFrame extends javax.swing.JFrame {
     BufferedImage bi;
 
     public ClientFrame(Client c) {
-       
+
         cli = c;
         region_images = c.board.getRegion_images();
         initComponents();
+
+        try {
+            BufferedImage mm_pic = ImageIO.read(new File("src\\riskclient\\images\\main.png"));
+            jLabel7.setIcon(new ImageIcon(mm_pic));
+        } catch (IOException ex) {
+            Logger.getLogger(ClientFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        start_button.setEnabled(false);
+        main_menu_message.setText("Pair to start playing. Enter your pair's ID.");
+        this.setContentPane(MainMenu);
+        MainMenu.setVisible(true);
+        revalidate();
+        repaint();
 
         while (cli.clientId == -1);
         your_id.setText("Your ID: " + cli.clientId + "");
@@ -74,7 +86,8 @@ public class ClientFrame extends javax.swing.JFrame {
         messageBox.setText(s);
     }
 
-    public synchronized void load_region_list() {
+    public synchronized void load_region_list() {//updates the list and map on frame in another thread and locks the method
+        //to avoid conflliction
 
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -82,7 +95,14 @@ public class ClientFrame extends javax.swing.JFrame {
                 region_dlm.removeAllElements();
 
                 for (Region r : cli.board.getRegions()) {
-                    region_dlm.addElement("Region " + r.getName() + "     " + r.getOwner() + "     " + r.getTroop_count());
+                    if (r.getOwner().equals("player")) {
+                        region_dlm.addElement("Region " + r.getName() + "    YOURS       " + r.getTroop_count());
+                    } else if (r.getOwner().equals("rival")) {
+                        region_dlm.addElement("Region " + r.getName() + "    RIVALS      " + r.getTroop_count());
+                    } else {
+                        region_dlm.addElement("Region " + r.getName() + "    EMPTY       " + r.getTroop_count());
+                    }
+
                 }
                 regionList.setModel(region_dlm);
                 jPanel2.repaint();
@@ -102,23 +122,8 @@ public class ClientFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         count_boxes = new javax.swing.ButtonGroup();
-        jButton1 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        regionList = new javax.swing.JList<>();
-        jLabel1 = new javax.swing.JLabel();
+        Game = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        chooseButton = new javax.swing.JButton();
-        messageBox = new javax.swing.JLabel();
-        your_id = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        troop_count_label = new javax.swing.JLabel();
-        pass_button = new javax.swing.JButton();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jCheckBox2 = new javax.swing.JCheckBox();
-        jCheckBox3 = new javax.swing.JCheckBox();
-        jLabel4 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel(){
 
             @Override
@@ -137,107 +142,35 @@ public class ClientFrame extends javax.swing.JFrame {
                 }
 
             }};
+            jLabel4 = new javax.swing.JLabel();
+            jCheckBox3 = new javax.swing.JCheckBox();
+            jCheckBox2 = new javax.swing.JCheckBox();
+            jCheckBox1 = new javax.swing.JCheckBox();
+            troop_count_label = new javax.swing.JLabel();
+            jLabel3 = new javax.swing.JLabel();
+            messageBox = new javax.swing.JLabel();
+            chooseButton = new javax.swing.JButton();
+            jLabel1 = new javax.swing.JLabel();
+            jScrollPane1 = new javax.swing.JScrollPane();
+            regionList = new javax.swing.JList<>();
+            pass_button = new javax.swing.JButton();
+            MainMenu = new javax.swing.JPanel();
+            start_button = new javax.swing.JButton();
+            jLabel5 = new javax.swing.JLabel();
+            jLabel6 = new javax.swing.JLabel();
+            pairButton = new javax.swing.JButton();
+            pair_text = new javax.swing.JTextField();
+            your_id = new javax.swing.JLabel();
+            main_menu_message = new javax.swing.JLabel();
+            jLabel7 = new javax.swing.JLabel();
 
             setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
             setTitle("Risk Game");
-
-            jButton1.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
-            jButton1.setText("Pair");
-            jButton1.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jButton1ActionPerformed(evt);
-                }
-            });
-
-            jTextField1.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
-            jTextField1.setText("Pair ID");
-            jTextField1.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseClicked(java.awt.event.MouseEvent evt) {
-                    jTextField1MouseClicked(evt);
-                }
-            });
-            jTextField1.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jTextField1ActionPerformed(evt);
-                }
-            });
-
-            regionList.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
-            regionList.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseReleased(java.awt.event.MouseEvent evt) {
-                    regionListMouseReleased(evt);
-                }
-            });
-            jScrollPane1.setViewportView(regionList);
-
-            jLabel1.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
-            jLabel1.setText("Region");
+            setPreferredSize(new java.awt.Dimension(1100, 800));
+            getContentPane().setLayout(new java.awt.CardLayout());
 
             jLabel2.setFont(new java.awt.Font("Consolas", 1, 48)); // NOI18N
             jLabel2.setText("RISK");
-
-            chooseButton.setText("CHOOSE");
-            chooseButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    chooseButtonActionPerformed(evt);
-                }
-            });
-
-            messageBox.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
-
-            your_id.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
-            your_id.setText("jLabel3");
-
-            jLabel3.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
-            jLabel3.setText("Troop Count");
-
-            troop_count_label.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
-
-            pass_button.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
-            pass_button.setText("PASS");
-            pass_button.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    pass_buttonActionPerformed(evt);
-                }
-            });
-
-            count_boxes.add(jCheckBox1);
-            jCheckBox1.setText("1");
-            jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jCheckBox1ActionPerformed(evt);
-                }
-            });
-
-            count_boxes.add(jCheckBox2);
-            jCheckBox2.setText("2");
-            jCheckBox2.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jCheckBox2ActionPerformed(evt);
-                }
-            });
-
-            count_boxes.add(jCheckBox3);
-            jCheckBox3.setText("3");
-            jCheckBox3.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jCheckBox3ActionPerformed(evt);
-                }
-            });
-
-            jLabel4.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
-            jLabel4.setText("Owner");
-
-            javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-            jPanel1.setLayout(jPanel1Layout);
-            jPanel1Layout.setHorizontalGroup(
-                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGap(0, 56, Short.MAX_VALUE)
-            );
-            jPanel1Layout.setVerticalGroup(
-                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGap(0, 56, Short.MAX_VALUE)
-            );
 
             jPanel2.setPreferredSize(new java.awt.Dimension(450, 450));
 
@@ -252,129 +185,281 @@ public class ClientFrame extends javax.swing.JFrame {
                 .addGap(0, 450, Short.MAX_VALUE)
             );
 
-            javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-            getContentPane().setLayout(layout);
-            layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(482, 482, 482)
+            jLabel4.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+            jLabel4.setText("Owner");
+
+            count_boxes.add(jCheckBox3);
+            jCheckBox3.setText("3");
+            jCheckBox3.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jCheckBox3ActionPerformed(evt);
+                }
+            });
+
+            count_boxes.add(jCheckBox2);
+            jCheckBox2.setText("2");
+            jCheckBox2.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jCheckBox2ActionPerformed(evt);
+                }
+            });
+
+            count_boxes.add(jCheckBox1);
+            jCheckBox1.setText("1");
+            jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jCheckBox1ActionPerformed(evt);
+                }
+            });
+
+            troop_count_label.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+
+            jLabel3.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+            jLabel3.setText("Troop Count");
+
+            messageBox.setFont(new java.awt.Font("Consolas", 1, 24)); // NOI18N
+
+            chooseButton.setText("CHOOSE");
+            chooseButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    chooseButtonActionPerformed(evt);
+                }
+            });
+
+            jLabel1.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+            jLabel1.setText("Region");
+
+            regionList.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+            regionList.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseReleased(java.awt.event.MouseEvent evt) {
+                    regionListMouseReleased(evt);
+                }
+            });
+            jScrollPane1.setViewportView(regionList);
+
+            pass_button.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+            pass_button.setText("PASS");
+            pass_button.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    pass_buttonActionPerformed(evt);
+                }
+            });
+
+            javax.swing.GroupLayout GameLayout = new javax.swing.GroupLayout(Game);
+            Game.setLayout(GameLayout);
+            GameLayout.setHorizontalGroup(
+                GameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(GameLayout.createSequentialGroup()
+                    .addGroup(GameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(GameLayout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(troop_count_label, javax.swing.GroupLayout.PREFERRED_SIZE, 814, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(GameLayout.createSequentialGroup()
+                            .addGap(484, 484, 484)
                             .addComponent(jLabel2))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(47, 47, 47)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(messageBox, javax.swing.GroupLayout.PREFERRED_SIZE, 1012, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel1)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(72, 72, 72)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(chooseButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(pass_button, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGap(18, 18, 18)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jCheckBox1)
-                                        .addComponent(jCheckBox2)
-                                        .addComponent(jCheckBox3))))))
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addComponent(your_id, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jButton1)
-                            .addGap(818, 818, 818))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(troop_count_label, javax.swing.GroupLayout.PREFERRED_SIZE, 388, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(0, 0, Short.MAX_VALUE)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jLabel4)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addComponent(jLabel3)
-                                            .addGap(6, 6, 6)))
-                                    .addGap(129, 129, 129)))
-                            .addGap(14, 14, 14)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(152, 152, 152))))
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(179, 179, 179))
+                        .addGroup(GameLayout.createSequentialGroup()
+                            .addGap(44, 44, 44)
+                            .addGroup(GameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(GameLayout.createSequentialGroup()
+                                    .addGroup(GameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(GameLayout.createSequentialGroup()
+                                            .addGap(41, 41, 41)
+                                            .addGroup(GameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addGroup(GameLayout.createSequentialGroup()
+                                                    .addComponent(jLabel1)
+                                                    .addGap(49, 49, 49)
+                                                    .addComponent(jLabel4)
+                                                    .addGap(29, 29, 29)
+                                                    .addComponent(jLabel3))
+                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGroup(GameLayout.createSequentialGroup()
+                                            .addGap(118, 118, 118)
+                                            .addGroup(GameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(pass_button, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(chooseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGroup(GameLayout.createSequentialGroup()
+                                                    .addGap(6, 6, 6)
+                                                    .addComponent(jCheckBox1)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(jCheckBox2)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(jCheckBox3)))))
+                                    .addGap(199, 199, 199)
+                                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(messageBox, javax.swing.GroupLayout.PREFERRED_SIZE, 1050, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addContainerGap(47, Short.MAX_VALUE))
             );
-            layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(17, 17, 17)
+            GameLayout.setVerticalGroup(
+                GameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, GameLayout.createSequentialGroup()
+                    .addGap(23, 23, 23)
                     .addComponent(jLabel2)
-                    .addGap(7, 7, 7)
-                    .addComponent(messageBox, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(388, 388, 388)
-                            .addComponent(jCheckBox1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(jCheckBox2)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(jCheckBox3))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(18, 18, 18)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel3)
-                                        .addComponent(jLabel4))
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(chooseButton)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(pass_button)))))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addComponent(troop_count_label, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(88, 88, 88)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(your_id, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton1))
-                    .addGap(32, 32, 32))
+                    .addComponent(messageBox, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(18, 18, 18)
+                    .addGroup(GameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(GameLayout.createSequentialGroup()
+                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(40, 40, 40)
+                            .addComponent(troop_count_label, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(GameLayout.createSequentialGroup()
+                            .addGroup(GameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel4)
+                                .addComponent(jLabel3))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(chooseButton)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(GameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jCheckBox1)
+                                .addComponent(jCheckBox2)
+                                .addComponent(jCheckBox3))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(pass_button)
+                            .addGap(54, 54, 54)))
+                    .addGap(84, 84, Short.MAX_VALUE))
             );
+
+            getContentPane().add(Game, "card2");
+
+            MainMenu.setPreferredSize(new java.awt.Dimension(1042, 621));
+
+            start_button.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+            start_button.setText("START GAME");
+            start_button.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    start_buttonActionPerformed(evt);
+                }
+            });
+
+            jLabel5.setFont(new java.awt.Font("Consolas", 1, 72)); // NOI18N
+            jLabel5.setText("RISK");
+
+            jLabel6.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
+            jLabel6.setText("Beyza Gürer 2021");
+
+            pairButton.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+            pairButton.setText("Pair");
+            pairButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    pairButtonActionPerformed(evt);
+                }
+            });
+
+            pair_text.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
+            pair_text.setText("Pair ID");
+            pair_text.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    pair_textMouseClicked(evt);
+                }
+            });
+            pair_text.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    pair_textActionPerformed(evt);
+                }
+            });
+
+            your_id.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+            your_id.setText("jLabel3");
+
+            main_menu_message.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+            main_menu_message.setText("jLabel7");
+            main_menu_message.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+            jLabel7.setText("jLabel7");
+
+            javax.swing.GroupLayout MainMenuLayout = new javax.swing.GroupLayout(MainMenu);
+            MainMenu.setLayout(MainMenuLayout);
+            MainMenuLayout.setHorizontalGroup(
+                MainMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainMenuLayout.createSequentialGroup()
+                    .addContainerGap(291, Short.MAX_VALUE)
+                    .addGroup(MainMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainMenuLayout.createSequentialGroup()
+                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(282, 282, 282))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainMenuLayout.createSequentialGroup()
+                            .addGroup(MainMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(main_menu_message, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(MainMenuLayout.createSequentialGroup()
+                                    .addGap(129, 129, 129)
+                                    .addGroup(MainMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(MainMenuLayout.createSequentialGroup()
+                                            .addComponent(pair_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(pairButton))
+                                        .addComponent(your_id, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(MainMenuLayout.createSequentialGroup()
+                                            .addComponent(start_button, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(3, 3, 3)))))
+                            .addGap(336, 336, 336))))
+                .addGroup(MainMenuLayout.createSequentialGroup()
+                    .addGroup(MainMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(MainMenuLayout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(MainMenuLayout.createSequentialGroup()
+                            .addGap(491, 491, 491)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            );
+            MainMenuLayout.setVerticalGroup(
+                MainMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainMenuLayout.createSequentialGroup()
+                    .addGap(17, 17, 17)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(18, 18, 18)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(your_id, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(MainMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(pairButton)
+                        .addComponent(pair_text, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(3, 3, 3)
+                    .addComponent(main_menu_message, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(start_button, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(46, 46, 46)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap())
+            );
+
+            getContentPane().add(MainMenu, "card3");
 
             pack();
         }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-
-        if (Integer.parseInt(jTextField1.getText()) != this.cli.clientId
-                && !jTextField1.getText().equals("")) {
-            SendMessage msg = new SendMessage("pair");
-            msg.setToId(Integer.parseInt(jTextField1.getText()));
-            msg.setWanted_pair_id(Integer.parseInt(jTextField1.getText()));
-            this.cli.sendMessage(msg);
-        } else {
-            setMessageBox("You cannot leave pair ID empty and you cannot enter your own ID.");
+    private void pairButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pairButtonActionPerformed
+        // sends wanted pair id to server
+        
+        main_menu_message.setText("Pairing...");
+        try {
+            if (Integer.parseInt(pair_text.getText()) != this.cli.clientId
+                    && !pair_text.getText().equals("")) {
+                SendMessage msg = new SendMessage("pair");
+                msg.setToId(Integer.parseInt(pair_text.getText()));
+                msg.setWanted_pair_id(Integer.parseInt(pair_text.getText()));
+                this.cli.sendMessage(msg);
+                start_button.setEnabled(true);
+            } else {
+                main_menu_message.setText("Invalid ID");
+                pair_text.setText("     ");
+            }
+        } catch (Exception e) {
+            main_menu_message.setText("Invalid ID");
+            pair_text.setText("     ");
         }
 
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_pairButtonActionPerformed
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void pair_textActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pair_textActionPerformed
         // TODO add your handling code here:
 
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_pair_textActionPerformed
 
     private void chooseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chooseButtonActionPerformed
         // TODO add your handling code here:
@@ -407,9 +492,9 @@ public class ClientFrame extends javax.swing.JFrame {
             System.out.println("yollandı: " + newMsg.toString());
 
         } else if (Client.game_part.equals("attack_part")) {
-            if (attacking_region.getTroop_count() < attacked_troop_count) {
+            if (attacking_region.getTroop_count() <= attacked_troop_count) {
                 setMessageBox("You do not have enough troops in Region " + attacking_region.getName());
-
+                return;
             } else {
                 //     attacking_region.setTroop_count(attacking_region.getTroop_count() - attacked_troop_count);
                 chooseButton.setEnabled(true);
@@ -425,8 +510,9 @@ public class ClientFrame extends javax.swing.JFrame {
 
         } else if (Client.game_part.equals("defending")) {
 
-            if (attacking_region.getTroop_count() < attacked_troop_count) {
+            if (attacked_region.getTroop_count() < defending_troop_count) {
                 setMessageBox("You do not have enough troops in Region " + attacking_region.getName());
+                return;
             } else {
                 chooseButton.setEnabled(true);
                 setCheckBoxesVisible(false);
@@ -446,11 +532,19 @@ public class ClientFrame extends javax.swing.JFrame {
                 SendMessage newMsg = new SendMessage("game_over");
                 newMsg.setMessage("LOSE...");
                 this.cli.sendMessage(newMsg.toString());
+                chooseButton.setText("RESTART");
+                chooseButton.setEnabled(true);
+                Client.game_part = "restart";
+                return;
             } else if (this.cli.board.check_finish().equals("rival")) {
                 setMessageBox("YOU LOSE...");
                 SendMessage newMsg = new SendMessage("game_over");
                 newMsg.setMessage("WIN!");
                 this.cli.sendMessage(newMsg.toString());
+                chooseButton.setText("RESTART");
+                chooseButton.setEnabled(true);
+                Client.game_part = "restart";
+                return;
             } else {
                 String board_info = this.cli.board.send_board_info(this.cli.clientId, "null", 0, "null");
                 SendMessage newMsg = new SendMessage("start_turn");
@@ -462,14 +556,32 @@ public class ClientFrame extends javax.swing.JFrame {
             setMessageBox("Choose the region to attack.");
             start_attack_part();
             return;
+        } else if (Client.game_part.equals("restart")) {
+            restart_game();
+            return;
         }
 
         chooseButton.setEnabled(false);
 
     }//GEN-LAST:event_chooseButtonActionPerformed
 
+    void restart_game() {
+        //restarts the game and updates the frame
+        chooseButton.setEnabled(true);
+        chooseButton.setText("NEXT");
+        cli.board.restart_board();
+        this.setContentPane(MainMenu);
+        load_region_list();
+        cli.total_troop_count = 20;
+
+        Game.setVisible(true);
+        MainMenu.setVisible(true);
+        Client.game_part = "locate_troops";
+
+    }
+
     private void regionListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_regionListMouseReleased
-        // TODO add your handling code here:
+        // shows and activates the options when clicked on the list dependent on the game part 
         try {
             String regionLetter = this.regionList.getSelectedValue().toString().charAt(7) + "";
             System.out.println(regionLetter);
@@ -555,6 +667,8 @@ public class ClientFrame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_regionListMouseReleased
 
+    // checkboxes to choose troop count
+    
     private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
         // TODO add your handling code here:
 
@@ -584,23 +698,32 @@ public class ClientFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jCheckBox3ActionPerformed
 
     private void pass_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pass_buttonActionPerformed
-        // TODO add your handling code here:
+        // finishes attackin part
         setCheckBoxesVisible(false);
         pass_button.setVisible(false);
         start_final_part();
 
     }//GEN-LAST:event_pass_buttonActionPerformed
 
-    private void jTextField1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseClicked
+    private void pair_textMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pair_textMouseClicked
         // TODO add your handling code here:
-        jTextField1.setText("");
-    }//GEN-LAST:event_jTextField1MouseClicked
+        pair_text.setText("");
+    }//GEN-LAST:event_pair_textMouseClicked
+
+    private void start_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_start_buttonActionPerformed
+        // starts the game panel
+        this.setContentPane(Game);
+        MainMenu.setVisible(false);
+        Game.setVisible(true);
+
+    }//GEN-LAST:event_start_buttonActionPerformed
 
     public void setTroop_count_label(String troop_count_label) {
         this.troop_count_label.setText("Current Troop Count: " + troop_count_label);
     }
 
     public void start_final_part() {
+       // starts the final part of the game where troops are relocated
         Client.game_part = "relocate_troops";
         messageBox.setText("Relocate your troops by clicking on your regions from the list.");
         chooseButton.setText("END TURN");
@@ -608,6 +731,7 @@ public class ClientFrame extends javax.swing.JFrame {
     }
 
     public void start_second_part() {
+        //starts the part of the game where the troops are distributed to player's regions
         setCheckBoxesVisible(false);
         load_region_list();
         Client.game_part = "locate_troops";
@@ -618,6 +742,7 @@ public class ClientFrame extends javax.swing.JFrame {
     }
 
     public void second_turn() {
+        //after the first attack and relocate session, starts the second turn 
         chooseButton.setText("NEXT");
         chooseButton.setEnabled(true);
         setCheckBoxesVisible(false);
@@ -632,6 +757,7 @@ public class ClientFrame extends javax.swing.JFrame {
     }
 
     public void finish_game(String winner) {
+        //finishes the game and sends info to pair client
         setMessageBox("Winner is " + winner);
         SendMessage newMsg = new SendMessage("game_over");
         this.cli.sendMessage(newMsg.toString());
@@ -639,7 +765,7 @@ public class ClientFrame extends javax.swing.JFrame {
     }
 
     public void start_attack_part() {
-
+        //starts attack part where the player can choose a region to attack
         Client.game_part = "attack_part";
         load_region_list();
 
@@ -651,6 +777,7 @@ public class ClientFrame extends javax.swing.JFrame {
     }
 
     public void defend(String info) {
+        //when the player is attacked starts the defend part to choose defending troop count
 
         chooseButton.setEnabled(true);
 
@@ -673,7 +800,8 @@ public class ClientFrame extends javax.swing.JFrame {
 
             }
 
-            setMessageBox("Region " + attackedRegionName + " is under attack from Region " + attackingRegionName + " with " + attacked_troop_count + " troops. Choose number of defending troops.");
+            setMessageBox("<html>Region " + attackedRegionName + " is under attack from Region " + attackingRegionName + " with " + attacked_troop_count + " troops."
+                    + "<br/>Choose number of defending troops.</html>");
             chooseButton.setText("DEFEND");
             Client.game_part = "defending";
             setCheckBoxesVisible(true);
@@ -692,51 +820,12 @@ public class ClientFrame extends javax.swing.JFrame {
             jCheckBox3.setVisible(b);
         }
     }
-    
-  void update_images(){
-        
-  }
-
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ClientFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ClientFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ClientFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ClientFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
- /*    java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ClientFrame(new Client("8765", 32)).setVisible(true);
-            }
-        });*/
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel Game;
+    private javax.swing.JPanel MainMenu;
     public javax.swing.JButton chooseButton;
     private javax.swing.ButtonGroup count_boxes;
-    private javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;
@@ -744,13 +833,18 @@ public class ClientFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel main_menu_message;
     public static javax.swing.JLabel messageBox;
+    private javax.swing.JButton pairButton;
+    private javax.swing.JTextField pair_text;
     private javax.swing.JButton pass_button;
     private javax.swing.JList<String> regionList;
+    public javax.swing.JButton start_button;
     private javax.swing.JLabel troop_count_label;
     private javax.swing.JLabel your_id;
     // End of variables declaration//GEN-END:variables

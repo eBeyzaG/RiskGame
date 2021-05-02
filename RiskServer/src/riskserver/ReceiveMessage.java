@@ -22,7 +22,7 @@ public class ReceiveMessage implements Serializable{
     int client_id_for_connection;
     
 
-    public ReceiveMessage(String text, int from) {
+    public ReceiveMessage(String text, int from) { //converts string to message to read
         String[] lines = text.split("\n");
         this.type = lines[0].split(" ")[1];
         this.message = lines[1].split(" ")[1];

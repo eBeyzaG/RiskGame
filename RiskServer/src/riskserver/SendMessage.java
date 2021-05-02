@@ -52,7 +52,7 @@ public class SendMessage implements Serializable{
     
     
     @Override
-    public String toString() {
+    public String toString() {//converts message to string to send to client
         String msg = "";
         
          msg += "Type: " + this.type + "\nMessage: " + this.message +

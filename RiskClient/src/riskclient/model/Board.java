@@ -7,7 +7,6 @@ package riskclient.model;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -15,6 +14,7 @@ import java.util.Random;
 /**
  *
  * @author beyza
+ * Game board class to hold board information and methods
  */
 public class Board {
 
@@ -28,7 +28,7 @@ public class Board {
         init_board();
     }
 
-    void init_board() {
+    void init_board() { //initializes board regions
 
         Region rA = new Region("A");
         Region rB = new Region("B");
@@ -123,6 +123,7 @@ public class Board {
     }
 
     public void updateBoard(String regionName, int newTroopCount, String owner) {
+        //updates the board information with given parameters
 
         for (Region region : this.regions) {
             if (region.name.equals(regionName)) {
@@ -141,25 +142,16 @@ public class Board {
     public ArrayList<BufferedImage> getRegion_images() {
         return region_images;
     }
-    
-    
 
     public String receive_board_info(String boardInfo, int clientId) {
+        //converts string to board information and updates the board
+        //returns attack info 
 
-        System.out.println("işte bilgi size: " + boardInfo);
         String[] board = boardInfo.split("/");
-        System.out.println("firstPArt " + board[0]);
-        System.out.println("second part after | " + board[1]);
         String[] regs = board[0].split("-");
 
         for (String info : regs) {
-            System.out.println("info: " + info);
             String[] parts = info.split(",");
-            /*  if (clientId == Integer.parseInt(parts[1])) {
-                updateBoard(parts[0], Integer.parseInt(parts[2]), "player");
-            } else {
-                updateBoard(parts[0], Integer.parseInt(parts[2]), "rival");
-            }*/
             if (parts[1].equals("senders")) {
                 updateBoard(parts[0], Integer.parseInt(parts[2]), "rival");
             } else {
@@ -171,7 +163,7 @@ public class Board {
     }
 
     public String send_board_info(int clientId, String attacked_region, int attacked_count, String attacking_region) {
-
+        //prepares the info about the board as a string
         String info = "";
 
         for (Region r : this.regions) {
@@ -200,7 +192,9 @@ public class Board {
     }
 
     public String fight(Region attacking, int attacking_count, Region attacked, int defendCount) {
-
+        //when a region is attacked calculates the result of the fight
+        //least number of common troop count is the comparison count
+        //largest amounts out of the random numbers are compared
         String result = "";
         Random r = new Random();
 
@@ -235,6 +229,7 @@ public class Board {
             if (attacked.getTroop_count() == 0) {
                 attacked.setOwner("rival");
                 attacked.setTroop_count(attacking_count);
+                Board.region_images.add(attacked.blue_img);
 
                 break;
             }
@@ -246,6 +241,7 @@ public class Board {
     }
 
     public String check_finish() {
+        //checks wheter all regions are occupied by one person meaning the game ended
         String winner = "";
         if (regions.get(0).getOwner().equals("player")) {
             winner = "player";
@@ -263,5 +259,16 @@ public class Board {
             }
         }
         return winner;
+    }
+    
+    public void restart_board(){
+        //restarts board info
+    
+        for(Region r: regions){
+            r.setOwner("");
+            r.setTroop_count(0);
+        }
+        region_images.clear();
+        
     }
 }

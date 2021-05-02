@@ -24,11 +24,9 @@ public class ReceiveMessage  implements Serializable{
     String chosen_region_name;
 
     
-    public void break_board_message(){
+ 
     
-    }
-    
-    public ReceiveMessage(String text) {
+    public ReceiveMessage(String text) { //converts string to message to read
         String[] lines = text.split("\n");
         this.type = lines[0].split(" ")[1];
         this.message = lines[1].split(" ")[1];
@@ -42,7 +40,7 @@ public class ReceiveMessage  implements Serializable{
     }
 
     @Override
-    public String toString() {
+    public String toString() { 
         String msg = "";
 
         msg += "Type: " + this.type + "\nMessage: " + this.message

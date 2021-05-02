@@ -57,7 +57,7 @@ public class Client {
         this.clientId = clientId;
     }
 
-    void startFrame() {
+    void startFrame() {//start the jFrame
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             Client cli;
@@ -74,7 +74,7 @@ public class Client {
         }.init(this));
     }
 
-    void connect() {
+    void connect() {//connect to server
         try {
             System.out.println("Connecting...");
 
@@ -90,7 +90,7 @@ public class Client {
         }
     }
 
-    void start() {
+    void start() {//start listening
 
         this.client_listening_server = new ClientListeningServer(this);
         this.isConnected = true;
@@ -109,7 +109,7 @@ public class Client {
         }
     }
 
-    void sendMessage(Object msg) {
+    void sendMessage(Object msg) {//send message to server
 
         if (this.socket.isConnected()) {
             try {
@@ -123,13 +123,6 @@ public class Client {
 
     }
 
-    void attack(String info) {
-
-    }
-
-    void defend(Region r) {
-    }
-
 }
 
 class ClientListeningServer extends Thread {
@@ -141,7 +134,7 @@ class ClientListeningServer extends Thread {
     }
 
     @Override
-    public void run() {
+    public void run() {//listens and decides what to do with message according to type
 
         Object receivedText = "";
         this.client.startFrame();
@@ -162,11 +155,12 @@ class ClientListeningServer extends Thread {
                         System.out.println("Message: " + msg.message);
                         break;
                     case "first_part":
+
                         this.client.cf.setMessageBox("Your turn to choose a region.");
                         this.client.cf.chooseButton.setEnabled(true);
+
                         this.client.board.updateBoard(msg.chosen_region_name, 1, "rival");
                         this.client.cf.load_region_list();
-                        this.client.cf.update_images();
                         System.out.println(msg.toString());
                         if (this.client.board.is_all_full()) {//all regions are occupied
                             this.client.cf.start_second_part();
@@ -200,6 +194,9 @@ class ClientListeningServer extends Thread {
                     }
                     case "game_over":
                         this.client.cf.setMessageBox("You " + msg.message);
+                        this.client.cf.chooseButton.setText("RESTART");
+                        this.client.cf.chooseButton.setEnabled(true);
+                        Client.game_part = "restart";
                         break;
                     default:
                         System.out.println("Unknown message type.");

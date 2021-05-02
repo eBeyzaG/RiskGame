@@ -100,7 +100,7 @@ class ClientAcceptThread extends Thread {
     }
 
     @Override
-    public void run() {
+    public void run() {//listens for clients and initializes a client with clientID
 
         while (!this.server.serverSocket.isClosed()) {
 
@@ -144,7 +144,7 @@ class PairThread extends Thread {
     }
 
     @Override
-    public void run() {
+    public void run() {//pairs clients according to their wanted pair's id
         
         
         while (!this.server.serverSocket.isClosed()) {

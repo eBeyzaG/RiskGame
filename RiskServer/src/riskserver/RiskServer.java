@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 /**
  *
  * @author beyza
+ * Run class
  */
 public class RiskServer {
 
