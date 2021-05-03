@@ -287,7 +287,7 @@ public class ClientFrame extends javax.swing.JFrame {
                                     .addGap(199, 199, 199)
                                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(messageBox, javax.swing.GroupLayout.PREFERRED_SIZE, 1050, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addContainerGap(47, Short.MAX_VALUE))
+                    .addContainerGap(79, Short.MAX_VALUE))
             );
             GameLayout.setVerticalGroup(
                 GameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -377,24 +377,25 @@ public class ClientFrame extends javax.swing.JFrame {
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainMenuLayout.createSequentialGroup()
                     .addContainerGap(291, Short.MAX_VALUE)
                     .addGroup(MainMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainMenuLayout.createSequentialGroup()
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(282, 282, 282))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainMenuLayout.createSequentialGroup()
-                            .addGroup(MainMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(MainMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainMenuLayout.createSequentialGroup()
+                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(282, 282, 282))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainMenuLayout.createSequentialGroup()
                                 .addComponent(main_menu_message, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(336, 336, 336)))
+                        .addGroup(MainMenuLayout.createSequentialGroup()
+                            .addGap(129, 129, 129)
+                            .addGroup(MainMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(MainMenuLayout.createSequentialGroup()
-                                    .addGap(129, 129, 129)
-                                    .addGroup(MainMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addGroup(MainMenuLayout.createSequentialGroup()
-                                            .addComponent(pair_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGap(18, 18, 18)
-                                            .addComponent(pairButton))
-                                        .addComponent(your_id, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGroup(MainMenuLayout.createSequentialGroup()
-                                            .addComponent(start_button, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGap(3, 3, 3)))))
-                            .addGap(336, 336, 336))))
+                                    .addComponent(pair_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(pairButton))
+                                .addComponent(your_id, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(MainMenuLayout.createSequentialGroup()
+                                    .addComponent(start_button, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(3, 3, 3)))
+                            .addGap(48, 48, 48))))
                 .addGroup(MainMenuLayout.createSequentialGroup()
                     .addGroup(MainMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(MainMenuLayout.createSequentialGroup()
@@ -434,7 +435,7 @@ public class ClientFrame extends javax.swing.JFrame {
 
     private void pairButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pairButtonActionPerformed
         // sends wanted pair id to server
-        
+
         main_menu_message.setText("Pairing...");
         try {
             if (Integer.parseInt(pair_text.getText()) != this.cli.clientId
@@ -489,20 +490,17 @@ public class ClientFrame extends javax.swing.JFrame {
             SendMessage newMsg = new SendMessage("locate_troops");
             newMsg.setBoard_info(this.cli.board.send_board_info(this.cli.clientId, "null", 0, "null"));
             this.cli.sendMessage(newMsg.toString());
-            System.out.println("yollandı: " + newMsg.toString());
 
         } else if (Client.game_part.equals("attack_part")) {
             if (attacking_region.getTroop_count() <= attacked_troop_count) {
                 setMessageBox("You do not have enough troops in Region " + attacking_region.getName());
                 return;
             } else {
-                //     attacking_region.setTroop_count(attacking_region.getTroop_count() - attacked_troop_count);
                 chooseButton.setEnabled(true);
                 pass_button.setEnabled(false);
                 String board_info = this.cli.board.send_board_info(this.cli.clientId, attacked_region.getName(), attacked_troop_count, attacking_region.getName());
                 SendMessage newMsg = new SendMessage("attack");
                 newMsg.setBoard_info(board_info);
-                System.out.println("saldırıldı: " + newMsg.toString());
                 this.cli.sendMessage(newMsg.toString());
                 this.messageBox.setText("Wait for other player's defense.");
 
@@ -566,18 +564,14 @@ public class ClientFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_chooseButtonActionPerformed
 
     void restart_game() {
-        //restarts the game and updates the frame
-        chooseButton.setEnabled(true);
-        chooseButton.setText("NEXT");
-        cli.board.restart_board();
-        this.setContentPane(MainMenu);
-        load_region_list();
-        cli.total_troop_count = 20;
-
-        Game.setVisible(true);
-        MainMenu.setVisible(true);
-        Client.game_part = "locate_troops";
-
+        //restarts game by cleaning old information and creating new client
+        Client.game_part = "choose_regions";
+        Client.turn_count = 0;
+        ClientFrame.region_images.clear();
+        this.setVisible(false);
+        cli.client_listening_server.interrupt();
+        this.dispose();
+        new Client("127.0.0.1", 5000);
     }
 
     private void regionListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_regionListMouseReleased
@@ -642,7 +636,8 @@ public class ClientFrame extends javax.swing.JFrame {
                                     @Override
                                     public void actionPerformed(ActionEvent ae) {
                                         System.out.println("Saldırılacak neighbor seçildi " + r2.getName() + " " + r2.getOwner());
-                                        setMessageBox("You are choosing to attack Region " + r2.getName() + " from Region " + r.getName() + ". Choose troop count and attack.");
+                                        setMessageBox("<html>You are choosing to attack Region " + r2.getName() + " from Region " + r.getName()
+                                                + ".<br/>Choose troop count and attack.</html>");
                                         setCheckBoxesVisible(true);
 
                                         attacked_region = r2;
@@ -668,7 +663,7 @@ public class ClientFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_regionListMouseReleased
 
     // checkboxes to choose troop count
-    
+
     private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
         // TODO add your handling code here:
 
@@ -723,7 +718,7 @@ public class ClientFrame extends javax.swing.JFrame {
     }
 
     public void start_final_part() {
-       // starts the final part of the game where troops are relocated
+        // starts the final part of the game where troops are relocated
         Client.game_part = "relocate_troops";
         messageBox.setText("Relocate your troops by clicking on your regions from the list.");
         chooseButton.setText("END TURN");

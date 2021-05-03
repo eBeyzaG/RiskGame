@@ -260,15 +260,5 @@ public class Board {
         }
         return winner;
     }
-    
-    public void restart_board(){
-        //restarts board info
-    
-        for(Region r: regions){
-            r.setOwner("");
-            r.setTroop_count(0);
-        }
-        region_images.clear();
-        
-    }
+
 }

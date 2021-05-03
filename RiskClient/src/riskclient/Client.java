@@ -28,7 +28,7 @@ public class Client {
     Socket socket;
     ObjectInputStream server_input;
     ObjectOutputStream client_output;
-    ClientListeningServer client_listening_server;
+    public ClientListeningServer client_listening_server;
 
     int clientId = -1;
     String username;
