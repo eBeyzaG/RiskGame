@@ -152,7 +152,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JPanel(){&#xa;  &#xa;    @Override&#xa;    public void paintComponent(Graphics g)&#xa;&#xa;    {&#xa;        super.paintComponent(g);&#xa;        try {&#xa;            bi = ImageIO.read(new File(&quot;C:\\Users\\beyza\\OneDrive\\Belgeler\\GitKlones\\RiskGame\\RiskClient\\src\\riskclient\\images\\map.png&quot;));&#xa;        } catch (IOException ex) {&#xa;            Logger.getLogger(ClientFrame.class.getName()).log(Level.SEVERE, null, ex);&#xa;        }&#xa;        g.drawImage(bi, 0, 0, this);&#xa;        for(BufferedImage bim: ClientFrame.region_images){&#xa;            g.drawImage(bim, 0, 0, this);&#xa;        }&#xa;&#xa;    }}"/>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JPanel(){&#xa;&#xa;    @Override&#xa;    public void paintComponent(Graphics g)&#xa;&#xa;    {&#xa;        super.paintComponent(g);&#xa;        try {&#xa;            bi = ImageIO.read(new File(&quot;src\\riskclient\\images\\map.png&quot;));&#xa;        } catch (IOException ex) {&#xa;            Logger.getLogger(ClientFrame.class.getName()).log(Level.SEVERE, null, ex);&#xa;        }&#xa;        g.drawImage(bi, 0, 0, this);&#xa;        for(BufferedImage bim: ClientFrame.region_images){&#xa;            g.drawImage(bim, 0, 0, this);&#xa;        }&#xa;&#xa;    }}"/>
             <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="ClientFrame_jPanel2"/>
           </AuxValues>
 

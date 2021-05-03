@@ -132,7 +132,7 @@ public class ClientFrame extends javax.swing.JFrame {
             {
                 super.paintComponent(g);
                 try {
-                    bi = ImageIO.read(new File("C:\\Users\\beyza\\OneDrive\\Belgeler\\GitKlones\\RiskGame\\RiskClient\\src\\riskclient\\images\\map.png"));
+                    bi = ImageIO.read(new File("src\\riskclient\\images\\map.png"));
                 } catch (IOException ex) {
                     Logger.getLogger(ClientFrame.class.getName()).log(Level.SEVERE, null, ex);
                 }
